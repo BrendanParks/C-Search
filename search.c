@@ -48,15 +48,19 @@ int main(int argc, const char **argv) {
 	
 	/*Get each line of index file*/
 	while(fgets(line, sizeof(line), indexFile)){
-				printf("NEW LINE\n",line);
-		while ((tokBuffer = strtok(atStart == 0 ? line : NULL," ")) != NULL) {
+				
+				atStart = 0;
+		while ((tokBuffer = strtok(atStart == 0 ? line : NULL," \f\n\r\t\v")) != NULL) {
 		
 			if (atStart == 0) atStart = 1;
 			
 			/*Continue at newline character*/
-			
+			if (tokBuffer[0] == 0x0d) {
+				continue;
+			}
 
 			if (inWord==0) {
+				printf("==================WORD START\n");
 				if (strcmp(WORD_START,tokBuffer) != 0){
 				/*If not at start of word and haven't started word...*/
 					fprintf(stderr, "ERROR: Illegal start of word!\n");
@@ -72,6 +76,7 @@ int main(int argc, const char **argv) {
 					inWord = 0;
 					firstWordToken=0;
 					isCount=0;
+					
 					continue;
 				}
 				if (firstWordToken == 1) { /* get word */
@@ -81,14 +86,29 @@ int main(int argc, const char **argv) {
 				} else if (isCount == 0) { /* get path */
 					
 					strcpy(pathBuffer,tokBuffer);
-					printf("DEBUG: Start path is %s\n",pathBuffer);
-					if (tokBuffer[strlen(tokBuffer)-1] == 0x0d) continue;
+					/* printf("DEBUG: Start path is %s\n",pathBuffer); */
+					
 					/* Get whole path. Concat extra parts of path
 						onto path snippet. This is done because
 						of possible spaces inside of the path.*/
 					while(pathBuffer[strlen(pathBuffer)-1] != '\"') { /*Looking for close quote*/
 						tokBufPath = strtok(NULL," ");
-						printf("DEBUG: tokBufPath is %s\n",tokBufPath);
+						if (tokBufPath == NULL) {
+							fprintf(stderr,"ERROR: Reached end of line without receiving full path\n");
+							exit(1);
+						}
+						
+						/* printf("DEBUG: tokBufPath is %s\n",tokBufPath); */
+						
+						/*Append space back on because it was a delimiter before*/
+						if (strlen(pathBuffer)<4096) {
+							pathBuffer[strlen(pathBuffer)+1] = '\0';
+							pathBuffer[strlen(pathBuffer)] = ' ';
+						} else {
+							fprintf(stderr,"ERROR: Potential buffer overflow in path determination\n");
+							exit(1);
+						}
+						
 						strcat(pathBuffer,tokBufPath);
 					}
 					
