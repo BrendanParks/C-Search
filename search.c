@@ -21,6 +21,64 @@ int getNextWordFromIndex() {
 }
 
 int main(int argc, const char **argv) {
+    
+    
+    
+    
+    
+    const char **n, *names[] = { "betty", "bob", "joe", NULL };
+    
+    struct hash *tobeadded, *tmp, *users, *subfile = NULL;
+    
+    
+    
+    //add words
+    for (n = names; *n != NULL; n++) {
+        tobeadded = (struct hash*)malloc(sizeof(struct hash));
+        tobeadded->name = *n;
+        HASH_ADD_KEYPTR( hh, users, tobeadded->name, strlen(tobeadded->name), tobeadded);
+        
+        
+        //for loop to add paths
+        subfile = (struct hash*)malloc(sizeof(struct hash));
+        subfile->name = *n;
+        HASH_ADD_KEYPTR( hh, tobeadded->sub, subfile->name, strlen(subfile->name), subfile);
+        
+        
+    }
+    
+    
+    
+    
+    HASH_FIND_STR( users, argv[1], tobeadded);
+    
+    
+    
+    
+    //if found!!!
+    if (tobeadded){
+        
+        printf("here!\n");
+        
+        //if not here
+    }else{
+        
+        printf("not here\n");
+    }
+    
+    
+    /* free the hash table contents */
+    HASH_ITER(hh, users, tobeadded, tmp) {
+        HASH_DEL(users, tobeadded);
+        free(tobeadded);
+        free(subfile);
+    }
+    return 0;
+}
+    
+    
+    
+    
 	if (argc != 2){
 		fprintf(stderr,"USAGE: search <inverted-index file name>\n");
 		return 1;
