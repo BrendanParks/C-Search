@@ -41,6 +41,7 @@ int main(int argc, const char **argv) {
     
     
     
+    
     //add words
     for (n = names; *n != NULL; n++) {
         tobeadded = (struct hash*)malloc(sizeof(struct hash));
@@ -51,6 +52,7 @@ int main(int argc, const char **argv) {
         //for loop to add paths
         subfile = (struct hash*)malloc(sizeof(struct hash));
         subfile->name = *n;
+        subfile->sub = NULL;
         HASH_ADD_KEYPTR( hh, tobeadded->sub, subfile->name, strlen(subfile->name), subfile);
         
         
