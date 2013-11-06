@@ -20,6 +20,15 @@ int getNextWordFromIndex() {
 
 }
 
+
+
+struct hash {
+    const char *name;
+    struct hash *sub;
+    UT_hash_handle hh;
+};
+
+
 int main(int argc, const char **argv) {
     
     
